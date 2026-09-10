@@ -4,10 +4,10 @@ from flask import Flask,request,jsonify,render_template
 from flask_cors import CORS
 
 from app.gmail import (
-is_email_command,
-extract_email,
-create_gmail_url,
-generate_email_with_gemini
+    is_email_command,
+    extract_email,
+    create_gmail_url,
+    generate_email_with_gemini
 )
 
 from app.youtube import youtube_bp
@@ -46,14 +46,14 @@ def agent():
         data =request.get_json(silent=True) or {}
         command = data.get("command","").strip()
 
-if not command:
-    return jsonify({
-        "success":False,
-        "message":"command is required"
+    if not command:
+        return jsonify({
+           "success":False,
+           "message":"command is required"
     }),400
 
-if not is_email_commmand(command):
-    return jsonify({
+    if not is_email_commmand(command):
+       return jsonify({
         "success":False,
         "message":"please give a Gmail command."
     }),400
