@@ -59,3 +59,4 @@ for attempt in range(4):
   try:
     with urllib.request.urlopen(req,timeout=30) as response:
       data =json.loads(response.read().decode())
+      text = data["candia
