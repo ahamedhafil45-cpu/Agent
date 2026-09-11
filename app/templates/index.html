@@ -1,453 +1,906 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#080a0c" />
-  <meta name="description" content="Nova AI — a voice-first music player." />
-  <title>Nova AI — Voice Music Player</title>
-  <style>
-    :root {
-      --background: #080a0c;
-      --foreground: #f6f4ee;
-      --muted: #8f969e;
-      --coral: #ff705d;
-      --cyan: #56d2cd;
-      --border: rgba(246, 244, 238, 0.15);
-      --glass: rgba(13, 16, 19, 0.68);
-      --danger: #ff4f5e;
-    }
 
-    * { box-sizing: border-box; }
+<meta charset="UTF-8">
 
-    html, body { margin: 0; min-height: 100%; }
+<meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+>
 
-    body {
-      min-height: 100svh;
-      overflow: hidden;
-      background: var(--background);
-      color: var(--foreground);
-      font-family: Arial, Helvetica, sans-serif;
-    }
+<title>Nova AI</title>
 
-    button, a { font: inherit; }
 
-    .shell {
-      position: relative;
-      isolation: isolate;
-      min-height: 100svh;
-      overflow: hidden;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      background: radial-gradient(circle at center, #111417 0%, var(--background) 68%);
-    }
+<style>
 
-    .shell::before {
-      content: "";
-      position: absolute;
-      z-index: -3;
-      inset: -25%;
-      opacity: 0.85;
-      background:
-        radial-gradient(ellipse at 8% 76%, transparent 0 37%, rgba(255,112,93,.42) 38%, rgba(255,112,93,.14) 40%, transparent 43%),
-        radial-gradient(ellipse at 95% 76%, transparent 0 37%, rgba(86,210,205,.36) 38%, rgba(86,210,205,.12) 40%, transparent 43%);
-      filter: blur(7px);
-      animation: drift 14s ease-in-out infinite alternate;
-    }
+body{
 
-    .shell::after {
-      content: "";
-      position: absolute;
-      z-index: -2;
-      inset: 0;
-      pointer-events: none;
-      opacity: .12;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E");
-    }
+    margin:0;
 
-    header, footer {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 28px clamp(22px, 4vw, 64px);
-    }
+    height:100vh;
 
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 11px;
-      color: var(--foreground);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 800;
-    }
+    display:grid;
 
-    .brand-mark {
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: var(--coral);
-      color: #101214;
-      box-shadow: 0 0 32px rgba(255,112,93,.32);
-    }
+    place-items:center;
 
-    .brand-mark svg { width: 17px; height: 17px; }
+    background:#111;
 
-    .live {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: var(--muted);
-    }
+    color:white;
 
-    .live span {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--cyan);
-      box-shadow: 0 0 10px var(--cyan);
-      animation: blink 2s ease-in-out infinite;
-    }
+    font-family:Arial;
+}
 
-    main {
-      width: min(760px, calc(100% - 32px));
-      margin: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
 
-    .copy { position: relative; z-index: 2; }
+.card{
 
-    .kicker {
-      margin: 0 0 14px;
-      color: var(--coral);
-      text-transform: uppercase;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .16em;
-    }
+    width:400px;
 
-    h1 {
-      max-width: 760px;
-      margin: 0;
-      font-size: clamp(42px, 7vw, 84px);
-      line-height: .98;
-      font-weight: 500;
-      letter-spacing: 0;
-    }
+    padding:25px;
 
-    .subtitle {
-      margin: 18px 0 30px;
-      color: var(--muted);
-      font-size: clamp(15px, 2vw, 18px);
-    }
+    text-align:center;
 
-    .waveform {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: min(920px, 92vw);
-      height: 290px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: clamp(5px, 1vw, 12px);
-      opacity: .18;
-      pointer-events: none;
-    }
+    background:#222;
 
-    .waveform span {
-      width: 3px;
-      height: var(--h);
-      border-radius: 99px;
-      background: linear-gradient(to bottom, var(--cyan), var(--coral));
-      transform: scaleY(.3);
-      transition: transform .6s ease, opacity .5s ease;
-    }
+    border:1px solid #444;
 
-    .waveform.active { opacity: .72; }
-    .waveform.active span { animation: equalize .75s ease-in-out var(--d) infinite alternate; }
+    border-radius:10px;
+}
 
-    .mic {
-      position: relative;
-      width: 104px;
-      height: 104px;
-      flex: 0 0 auto;
-      border: 1px solid rgba(246,244,238,.35);
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      color: #101214;
-      background: var(--foreground);
-      cursor: pointer;
-      box-shadow: 0 12px 44px rgba(0,0,0,.7), 0 0 0 8px rgba(246,244,238,.06);
-      transition: transform .3s ease, background .3s ease, box-shadow .3s ease;
-    }
 
-    .mic:hover { transform: translateY(-3px) scale(1.03); }
-    .mic:focus-visible { outline: 3px solid var(--coral); outline-offset: 6px; }
-    .mic:disabled { cursor: wait; }
-    .mic svg { position: relative; z-index: 2; width: 31px; height: 31px; }
+.mic{
 
-    .mic.listening {
-      background: var(--coral);
-      box-shadow: 0 0 48px rgba(255,112,93,.32), 0 0 0 10px rgba(255,112,93,.12);
-    }
+    width:75px;
 
-    .ripple {
-      position: absolute;
-      inset: -1px;
-      border: 1px solid var(--coral);
-      border-radius: inherit;
-      opacity: 0;
-    }
+    height:75px;
 
-    .mic.listening .ripple { animation: ripple 1.6s ease-out infinite; }
+    border:0;
 
-    .result {
-      min-height: 76px;
-      margin-top: 28px;
-      padding: 12px 18px;
-      display: flex;
-      align-items: flex-start;
-      gap: 11px;
-      text-align: left;
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      backdrop-filter: blur(16px);
-    }
+    border-radius:50%;
 
-    .result p { margin: 0; color: var(--muted); font-size: 13px; }
+    font-size:30px;
 
-    .result strong {
-      max-width: min(430px, 68vw);
-      margin-top: 5px;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      color: var(--foreground);
-      font-size: 14px;
-      font-weight: 600;
-      overflow-wrap: anywhere;
-    }
+    cursor:pointer;
 
-    .result strong svg { width: 14px; height: 14px; color: var(--cyan); flex: 0 0 auto; }
+    background:#eee;
+}
 
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      margin-top: 5px;
-      border-radius: 50%;
-      background: var(--muted);
-    }
 
-    .status-dot.active { background: var(--coral); box-shadow: 0 0 12px var(--coral); animation: blink 1s infinite; }
-    .status-dot.playing { background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
-    .status-dot.error { background: var(--danger); }
+.mic.listening{
 
-    footer {
-      justify-content: center;
-      gap: 14px;
-      color: var(--muted);
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-    }
+    background:#aaa;
+}
 
-    .footer-line { width: 42px; height: 1px; background: var(--border); }
 
-    @keyframes equalize { from { transform: scaleY(.3); } to { transform: scaleY(1); } }
-    @keyframes ripple { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(1.65); opacity: 0; } }
-    @keyframes blink { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
-    @keyframes drift { from { transform: scale(1.02) translateX(-1%); } to { transform: scale(1.08) translate(1%, -1%); } }
+.status{
 
-    @media (max-width: 640px) {
-      header { padding-top: 20px; }
-      .live { font-size: 0; }
-      .waveform { height: 230px; gap: 6px; }
-      .waveform span { width: 2px; }
-      .mic { width: 92px; height: 92px; }
-      h1 { max-width: 360px; }
-    }
+    margin:15px;
 
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
-    }
-  </style>
+    color:#aaa;
+}
+
+
+.command{
+
+    margin:10px;
+
+    color:#ccc;
+}
+
+
+.editor{
+
+    display:none;
+
+    margin-top:20px;
+
+    text-align:left;
+}
+
+
+.recipient{
+
+    color:#aaa;
+
+    font-size:13px;
+}
+
+
+input,
+textarea{
+
+    width:100%;
+
+    margin:6px 0;
+
+    padding:10px;
+
+    box-sizing:border-box;
+
+    background:#111;
+
+    color:white;
+
+    border:1px solid #444;
+
+    border-radius:5px;
+}
+
+
+textarea{
+
+    height:130px;
+
+    resize:vertical;
+}
+
+
+button.action{
+
+    padding:10px 14px;
+
+    margin-top:5px;
+
+    border:0;
+
+    border-radius:5px;
+
+    cursor:pointer;
+}
+
+
+.primary{
+
+    background:#666;
+
+    color:white;
+}
+
+</style>
+
 </head>
+
+
 <body>
-  <div class="shell">
-    <header>
-      <a class="brand" href="#" aria-label="Nova AI home">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.1L5 10l5.1 1.9L12 17l1.9-5.1L19 10l-5.1-1.9L12 3Z"/><path d="M5 3v4M3 5h4M19 17v4m-2-2h4"/></svg>
-        </span>
-        <span>NOVA</span>
-      </a>
-      <div class="live"><span></span> Voice activated</div>
-    </header>
 
-    <main aria-live="polite">
-      <div id="waveform" class="waveform" aria-hidden="true"></div>
 
-      <div class="copy">
-        <p class="kicker">Your music, one sentence away</p>
-        <h1 id="headline">What should we play?</h1>
-        <p id="subtitle" class="subtitle">Name a song, artist, or mood.</p>
-      </div>
+<div class="card">
 
-      <button id="mic" class="mic" type="button" aria-label="Start listening">
-        <span class="ripple"></span>
-        <svg id="micIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/>
-        </svg>
-      </button>
 
-      <div class="result">
-        <span id="statusDot" class="status-dot"></span>
-        <div>
-          <p id="status">Ready when you are</p>
-          <strong id="song" hidden>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-            <span id="songText"></span>
-          </strong>
-        </div>
-      </div>
-    </main>
+<h2>Nova AI</h2>
 
-    <footer><span>Powered by voice</span><span class="footer-line"></span><span>Made for music</span></footer>
-  </div>
 
-  <script>
-    const mic = document.getElementById("mic");
-    const micIcon = document.getElementById("micIcon");
-    const status = document.getElementById("status");
-    const statusDot = document.getElementById("statusDot");
-    const song = document.getElementById("song");
-    const songText = document.getElementById("songText");
-    const headline = document.getElementById("headline");
-    const subtitle = document.getElementById("subtitle");
-    const waveform = document.getElementById("waveform");
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const heights = [18,32,48,26,58,38,68,44,74,52,82,60,70,42,62,34,50,28,40,20];
-    let youtubeTab = null;
-    let listening = false;
+<p>
+    Say a song name or create an email
+</p>
 
-    heights.forEach((height, index) => {
-      const bar = document.createElement("span");
-      bar.style.setProperty("--h", height + "%");
-      bar.style.setProperty("--d", index * 45 + "ms");
-      waveform.appendChild(bar);
-    });
 
-    function setState(state, message) {
-      status.textContent = message;
-      statusDot.className = "status-dot";
-      mic.classList.remove("listening");
-      waveform.classList.remove("active");
+<button
+    id="mic"
+    class="mic"
+>
+    🎙️
+</button>
 
-      if (state === "listening" || state === "searching") {
-        statusDot.classList.add("active");
-        mic.classList.add("listening");
-        waveform.classList.add("active");
-      } else if (state === "playing") {
-        statusDot.classList.add("playing");
-      } else if (state === "error") {
-        statusDot.classList.add("error");
-      }
-    }
 
-    if (!SpeechRecognition) {
-      setState("error", "Voice recognition isn’t available in this browser");
-      subtitle.textContent = "Try opening Nova in Chrome or Edge.";
-      mic.disabled = true;
-    } else {
-      const recognition = new SpeechRecognition();
-      recognition.lang = "en-US";
-      recognition.continuous = false;
-      recognition.interimResults = false;
+<div
+    id="status"
+    class="status"
+>
+    Tap microphone
+</div>
 
-      recognition.onstart = () => {
+
+<div
+    id="command"
+    class="command"
+></div>
+
+
+
+<!-- Gmail Editor -->
+
+<div
+    id="editor"
+    class="editor"
+>
+
+
+    <div
+        id="recipient"
+        class="recipient"
+    ></div>
+
+
+    <input
+        id="subject"
+        placeholder="Email subject"
+    >
+
+
+    <textarea
+        id="body"
+        placeholder="Email body"
+    ></textarea>
+
+
+    <button
+        id="open"
+        class="action primary"
+    >
+        Open in Gmail
+    </button>
+
+
+    <button
+        id="regen"
+        class="action"
+    >
+        Regenerate
+    </button>
+
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+
+// --------------------------------------------------
+// DOM REFERENCES
+// --------------------------------------------------
+
+const $ =
+    id => document.getElementById(id);
+
+
+const mic =
+    $("mic");
+
+
+const status =
+    $("status");
+
+
+const commandBox =
+    $("command");
+
+
+const editor =
+    $("editor");
+
+
+const recipient =
+    $("recipient");
+
+
+const subject =
+    $("subject");
+
+
+const body =
+    $("body");
+
+
+
+// --------------------------------------------------
+// SPEECH RECOGNITION
+// --------------------------------------------------
+
+const SR =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+
+let recognition;
+
+let listening = false;
+
+
+
+// --------------------------------------------------
+// COMMAND STATE
+// --------------------------------------------------
+
+let lastCommand = "";
+
+
+// Prevent duplicate email generation
+
+let emailGenerated = false;
+
+
+// Prevent multiple requests at the same time
+
+let generatingEmail = false;
+
+
+// YouTube tab
+
+let youtubeTab = null;
+
+
+
+// --------------------------------------------------
+// SPEECH RECOGNITION SETUP
+// --------------------------------------------------
+
+if(!SR){
+
+    status.textContent =
+        "Speech recognition unavailable";
+
+    mic.disabled = true;
+
+}
+else{
+
+    recognition =
+        new SR();
+
+
+    recognition.lang =
+        "en-US";
+
+
+    recognition.continuous =
+        false;
+
+
+    recognition.interimResults =
+        false;
+
+
+
+    recognition.onstart = () => {
+
         listening = true;
-        headline.textContent = "I'm listening";
-        mic.setAttribute("aria-label", "Listening");
-        setState("listening", "Listening…");
-      };
 
-      recognition.onend = () => {
+        mic.classList.add(
+            "listening"
+        );
+
+        status.textContent =
+            "Listening...";
+
+    };
+
+
+
+    recognition.onend = () => {
+
         listening = false;
-        if (status.textContent === "Listening…") {
-          headline.textContent = "What should we play?";
-          mic.setAttribute("aria-label", "Start listening");
-          setState("idle", "Ready when you are");
-        }
-      };
 
-      recognition.onerror = () => {
+        mic.classList.remove(
+            "listening"
+        );
+
+    };
+
+
+
+    recognition.onerror = e => {
+
         listening = false;
-        headline.textContent = "Try that again";
-        mic.setAttribute("aria-label", "Try again");
-        setState("error", "I didn't catch that");
-      };
 
-      recognition.onresult = async (event) => {
-        const command = event.results[0][0].transcript.trim();
-        if (!command) {
-          setState("error", "No song detected");
-          return;
+        mic.classList.remove(
+            "listening"
+        );
+
+        status.textContent =
+            "Voice error: " +
+            e.error;
+
+    };
+
+
+
+    recognition.onresult = e => {
+
+        const text =
+            e.results[0][0]
+            .transcript
+            .trim();
+
+
+        if(!text){
+
+            status.textContent =
+                "No command detected";
+
+            return;
+
         }
 
-        songText.textContent = "“" + command + "”";
-        song.hidden = false;
-        setState("searching", "Finding your song…");
 
-        try {
-          const response = await fetch("/youtube/play", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ command })
-          });
-          const data = await response.json();
+        lastCommand =
+            text;
 
-          if (!response.ok || !data.success || !data.url) {
-            throw new Error(data.message || "Song not found");
-          }
 
-          if (!youtubeTab || youtubeTab.closed) {
-            youtubeTab = window.open(data.url, "NovaYouTube");
-          } else {
-            youtubeTab.location.href = data.url;
-            youtubeTab.focus();
-          }
+        commandBox.textContent =
+            text;
 
-          headline.textContent = "Enjoy the music";
-          setState("playing", "Now playing");
-        } catch (error) {
-          console.error(error);
-          headline.textContent = "Couldn't find it";
-          setState("error", error.message || "Server connection failed");
+
+        processCommand(
+            text
+        );
+
+    };
+
+
+
+    mic.onclick = () => {
+
+        if(listening)
+            return;
+
+
+        try{
+
+            recognition.start();
+
         }
-      };
+        catch(e){
 
-      mic.addEventListener("click", () => {
-        if (listening) return;
-        song.hidden = true;
-        try {
-          recognition.start();
-        } catch (error) {
-          console.error(error);
-          setState("error", "Please try again");
+            console.log(e);
+
         }
-      });
+
+    };
+
+}
+
+
+
+// --------------------------------------------------
+// GMAIL KEYWORD DETECTION
+// --------------------------------------------------
+//
+// Gmail requires BOTH:
+//
+// create
+// email
+//
+// Examples:
+//
+// "create email for my boss"
+// "create an email for my manager"
+//
+// --------------------------------------------------
+
+function isGmail(command){
+
+    const hasCreate =
+        /\bcreate\b/i.test(command);
+
+
+    const hasEmail =
+        /\bemail\b/i.test(command);
+
+
+    return (
+        hasCreate &&
+        hasEmail
+    );
+
+}
+
+
+
+// --------------------------------------------------
+// YOUTUBE KEYWORD DETECTION
+// --------------------------------------------------
+//
+// YouTube requires:
+//
+// play
+//
+// OR
+//
+// song
+//
+// Examples:
+//
+// "play believer"
+// "play a song"
+// "song believer"
+//
+// --------------------------------------------------
+
+function isYouTube(command){
+
+    return (
+        /\bplay\b/i.test(command) ||
+        /\bsong\b/i.test(command)
+    );
+
+}
+
+
+
+// --------------------------------------------------
+// MAIN COMMAND PROCESSOR
+// --------------------------------------------------
+
+async function processCommand(command){
+
+
+    // ----------------------------------------------
+    // CHECK COMMAND TYPE
+    // ----------------------------------------------
+
+    const gmail =
+        isGmail(command);
+
+
+    const youtube =
+        isYouTube(command);
+
+
+
+    // ----------------------------------------------
+    // GMAIL COMMAND
+    // ----------------------------------------------
+
+    if(gmail){
+
+        // Prevent duplicate generation
+
+        if(generatingEmail){
+
+            status.textContent =
+                "Email is already being generated...";
+
+            return;
+
+        }
+
+
+        // Prevent the same command from generating
+        // another email
+
+        if(
+            emailGenerated &&
+            command === lastCommand
+        ){
+
+            status.textContent =
+                "Email already generated.";
+
+            return;
+
+        }
+
+
+        generatingEmail = true;
+
+
+        status.textContent =
+            "Generating email...";
+
+
+        try{
+
+
+            const response =
+                await fetch(
+                    "/agent",
+                    {
+
+                        method:"POST",
+
+                        headers:{
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                command:command
+                            })
+
+                    }
+                );
+
+
+
+            const data =
+                await response.json();
+
+
+
+            if(
+                !response.ok ||
+                !data.success
+            ){
+
+                throw Error(
+                    data.message ||
+                    "Email request failed"
+                );
+
+            }
+
+
+
+            // Show ONE generated email
+
+            showEmail(
+                data
+            );
+
+
+            emailGenerated = true;
+
+
+        }
+        catch(error){
+
+            console.error(
+                error
+            );
+
+
+            status.textContent =
+                error.message ||
+                "Email generation failed";
+
+        }
+        finally{
+
+            generatingEmail = false;
+
+        }
+
+
+        return;
+
     }
-  </script>
+
+
+
+    // ----------------------------------------------
+    // YOUTUBE COMMAND
+    // ----------------------------------------------
+
+    else if(youtube){
+
+        status.textContent =
+            "Finding song...";
+
+
+        try{
+
+
+            const response =
+                await fetch(
+                    "/youtube/play",
+                    {
+
+                        method:"POST",
+
+                        headers:{
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                command:command
+                            })
+
+                    }
+                );
+
+
+
+            const data =
+                await response.json();
+
+
+
+            if(
+                !response.ok ||
+                !data.success
+            ){
+
+                throw Error(
+                    data.message ||
+                    "YouTube request failed"
+                );
+
+            }
+
+
+
+            playYouTube(
+                data
+            );
+
+
+        }
+        catch(error){
+
+            console.error(
+                error
+            );
+
+
+            status.textContent =
+                error.message ||
+                "YouTube request failed";
+
+        }
+
+
+        return;
+
+    }
+
+
+
+    // ----------------------------------------------
+    // UNKNOWN COMMAND
+    // ----------------------------------------------
+
+    else{
+
+        status.textContent =
+            "Please say 'create email' or 'play song'.";
+
+        return;
+
+    }
+
+}
+
+
+
+// --------------------------------------------------
+// SHOW GENERATED EMAIL
+// --------------------------------------------------
+
+function showEmail(data){
+
+
+    recipient.dataset.email =
+        data.recipient || "";
+
+
+    recipient.textContent =
+        data.recipient
+        ? "To: " + data.recipient
+        : "Recipient not specified";
+
+
+    subject.value =
+        data.subject || "";
+
+
+    body.value =
+        data.body || "";
+
+
+    editor.style.display =
+        "block";
+
+
+    status.textContent =
+        "Email ready. Review or edit it.";
+
+}
+
+
+
+// --------------------------------------------------
+// OPEN GMAIL
+// --------------------------------------------------
+
+$("open").onclick = () => {
+
+
+    const url =
+        "https://mail.google.com/mail/u/0/?" +
+
+        new URLSearchParams({
+
+            view:"cm",
+
+            fs:"1",
+
+            to:
+                recipient.dataset.email || "",
+
+            su:
+                subject.value,
+
+            body:
+                body.value
+
+        });
+
+
+
+    const win =
+        window.open(
+            url,
+            "NovaGmail"
+        );
+
+
+
+    if(!win){
+
+        status.textContent =
+            "Please allow popups for this site.";
+
+    }
+
+};
+
+
+
+// --------------------------------------------------
+// REGENERATE BUTTON
+// --------------------------------------------------
+//
+// No automatic second generation.
+//
+// Clicking this button also does NOT call /agent.
+// --------------------------------------------------
+
+$("regen").onclick = () => {
+
+    status.textContent =
+        "Email already generated. Edit the existing email.";
+
+};
+
+
+
+// --------------------------------------------------
+// YOUTUBE PLAYBACK
+// --------------------------------------------------
+
+function playYouTube(data){
+
+
+    if(
+        !youtubeTab ||
+        youtubeTab.closed
+    ){
+
+        youtubeTab =
+            window.open(
+                data.url,
+                "NovaYouTube"
+            );
+
+    }
+    else{
+
+        youtubeTab.location.href =
+            data.url;
+
+        youtubeTab.focus();
+
+    }
+
+
+    status.textContent =
+        "Playing";
+
+}
+
+
+</script>
+
+
 </body>
+
 </html>
