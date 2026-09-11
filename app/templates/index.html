@@ -1,669 +1,906 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nova AI</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0b0d12;
-      --surface: #151922;
-      --surface-2: #1c212e;
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #f0f2f7;
-      --text-muted: #8b92a8;
-      --text-dim: #5c6277;
-      --accent: #6366f1;
-      --accent-2: #8b5cf6;
-      --accent-3: #06b6d4;
-      --success: #22c55e;
-      --error: #ef4444;
-      --radius: 22px;
-      --radius-sm: 14px;
-      --shadow: 0 24px 70px -20px rgba(0, 0, 0, 0.7);
-    }
 
-    * {
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      background: radial-gradient(circle at 50% -20%, #1e2140 0%, var(--bg) 60%);
-      color: var(--text);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      padding: 24px;
-    }
+<meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+>
 
-    .card {
-      width: 100%;
-      max-width: 440px;
-      padding: 36px 30px;
-      text-align: center;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-    }
+<title>Nova AI</title>
 
-    .card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, transparent 50%, rgba(6, 182, 212, 0.05) 100%);
-      pointer-events: none;
-    }
 
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
+<style>
 
-    .brand-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      font-size: 15px;
-      color: white;
-      box-shadow: 0 8px 20px -8px rgba(99, 102, 241, 0.5);
-    }
+body{
 
-    h2 {
-      margin: 0;
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
+    margin:0;
 
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 14px;
-      margin: 8px 0 0;
-      line-height: 1.5;
-    }
+    height:100vh;
 
-    .mic-wrap {
-      position: relative;
-      width: 120px;
-      height: 120px;
-      margin: 32px auto 0;
-      display: grid;
-      place-items: center;
-    }
+    display:grid;
 
-    .mic-ring {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
-      opacity: 0;
-      transform: scale(0.85);
-    }
+    place-items:center;
 
-    .mic-ring.active {
-      animation: pulse-ring 2s ease-out infinite;
-    }
+    background:#111;
 
-    .mic-ring.active:nth-child(2) {
-      animation-delay: 0.6s;
-      border-color: var(--accent-3);
-    }
+    color:white;
 
-    @keyframes pulse-ring {
-      0% {
-        transform: scale(0.85);
-        opacity: 0.5;
-      }
-      100% {
-        transform: scale(1.7);
-        opacity: 0;
-      }
-    }
+    font-family:Arial;
+}
 
-    .mic {
-      position: relative;
-      width: 80px;
-      height: 80px;
-      border: 0;
-      border-radius: 50%;
-      font-size: 28px;
-      cursor: pointer;
-      background: linear-gradient(135deg, #ffffff 0%, #e2e4f0 100%);
-      color: var(--accent);
-      box-shadow: 0 12px 32px -10px rgba(99, 102, 241, 0.45);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      z-index: 1;
-    }
 
-    .mic:hover {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 16px 40px -12px rgba(99, 102, 241, 0.55);
-    }
+.card{
 
-    .mic:active {
-      transform: scale(0.96);
-    }
+    width:400px;
 
-    .mic.listening {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: white;
-      box-shadow: 0 14px 40px -12px rgba(99, 102, 241, 0.6);
-    }
+    padding:25px;
 
-    .status {
-      margin-top: 20px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      min-height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
+    text-align:center;
 
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--success);
-      box-shadow: 0 0 10px var(--success);
-    }
+    background:#222;
 
-    .status-dot.idle {
-      background: var(--text-dim);
-      box-shadow: none;
-    }
+    border:1px solid #444;
 
-    .status-dot.listening {
-      background: var(--accent-3);
-      box-shadow: 0 0 10px var(--accent-3);
-      animation: blink 1.4s infinite;
-    }
+    border-radius:10px;
+}
 
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
 
-    .command {
-      margin: 14px 0 0;
-      color: var(--text);
-      font-size: 15px;
-      font-weight: 500;
-      min-height: 22px;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
+.mic{
 
-    .command.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    width:75px;
 
-    .command::before {
-      content: '"';
-      color: var(--accent);
-    }
+    height:75px;
 
-    .command::after {
-      content: '"';
-      color: var(--accent);
-    }
+    border:0;
 
-    .editor {
-      display: none;
-      margin-top: 26px;
-      text-align: left;
-      animation: slide-up 0.4s ease both;
-    }
+    border-radius:50%;
 
-    @keyframes slide-up {
-      from {
-        opacity: 0;
-        transform: translateY(16px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+    font-size:30px;
 
-    .editor-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
+    cursor:pointer;
 
-    .editor-title {
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--accent-2);
-    }
+    background:#eee;
+}
 
-    .editor-badge {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      background: var(--surface-2);
-      padding: 4px 10px;
-      border-radius: 20px;
-    }
 
-    .recipient {
-      color: var(--text-muted);
-      font-size: 13px;
-      margin-bottom: 12px;
-      padding: 10px 12px;
-      background: var(--surface-2);
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-    }
+.mic.listening{
 
-    input,
-    textarea {
-      width: 100%;
-      margin: 0 0 12px;
-      padding: 13px 14px;
-      background: var(--surface-2);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-family: inherit;
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
+    background:#aaa;
+}
 
-    input::placeholder,
-    textarea::placeholder {
-      color: var(--text-dim);
-    }
 
-    input:focus,
-    textarea:focus {
-      border-color: rgba(99, 102, 241, 0.5);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    }
+.status{
 
-    textarea {
-      height: 130px;
-      resize: vertical;
-      line-height: 1.55;
-    }
+    margin:15px;
 
-    .actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 4px;
-    }
+    color:#aaa;
+}
 
-    button.action {
-      flex: 1;
-      padding: 12px 16px;
-      border: 0;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 600;
-      transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-    }
 
-    button.action:hover {
-      transform: translateY(-1px);
-    }
+.command{
 
-    button.action:active {
-      transform: scale(0.98);
-    }
+    margin:10px;
 
-    .primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: white;
-      box-shadow: 0 10px 28px -12px rgba(99, 102, 241, 0.5);
-    }
+    color:#ccc;
+}
 
-    .primary:hover {
-      box-shadow: 0 12px 32px -10px rgba(99, 102, 241, 0.6);
-    }
 
-    .secondary {
-      background: var(--surface-2);
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-    }
+.editor{
 
-    .secondary:hover {
-      color: var(--text);
-      border-color: rgba(255, 255, 255, 0.15);
-    }
+    display:none;
 
-    .hint {
-      margin-top: 22px;
-      padding-top: 22px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+    margin-top:20px;
 
-    .hint-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: var(--text-muted);
-      background: var(--surface-2);
-      padding: 7px 12px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-    }
+    text-align:left;
+}
 
-    .hint-chip span {
-      color: var(--accent-3);
-      font-weight: 600;
-    }
 
-    @media (max-width: 480px) {
-      .card {
-        padding: 28px 22px;
-      }
+.recipient{
 
-      .mic-wrap {
-        width: 108px;
-        height: 108px;
-      }
+    color:#aaa;
 
-      .mic {
-        width: 72px;
-        height: 72px;
-      }
-    }
-  </style>
+    font-size:13px;
+}
+
+
+input,
+textarea{
+
+    width:100%;
+
+    margin:6px 0;
+
+    padding:10px;
+
+    box-sizing:border-box;
+
+    background:#111;
+
+    color:white;
+
+    border:1px solid #444;
+
+    border-radius:5px;
+}
+
+
+textarea{
+
+    height:130px;
+
+    resize:vertical;
+}
+
+
+button.action{
+
+    padding:10px 14px;
+
+    margin-top:5px;
+
+    border:0;
+
+    border-radius:5px;
+
+    cursor:pointer;
+}
+
+
+.primary{
+
+    background:#666;
+
+    color:white;
+}
+
+</style>
+
 </head>
+
+
 <body>
-  <div class="card">
-    <div class="brand">
-      <div class="brand-icon">N</div>
-      <h2>Nova AI</h2>
-    </div>
-    <p class="subtitle">Say a song name to play it, or ask me to draft an email.</p>
 
-    <div class="mic-wrap">
-      <div class="mic-ring"></div>
-      <div class="mic-ring"></div>
-      <button id="mic" class="mic">🎙️</button>
-    </div>
 
-    <div id="status" class="status">
-      <span class="status-dot idle"></span>
-      Tap microphone to speak
-    </div>
+<div class="card">
 
-    <div id="command" class="command"></div>
 
-    <!-- Gmail Editor -->
-    <div id="editor" class="editor">
-      <div class="editor-header">
-        <span class="editor-title">Draft ready</span>
-        <span class="editor-badge">Gmail</span>
-      </div>
-      <div id="recipient" class="recipient"></div>
-      <input id="subject" placeholder="Email subject">
-      <textarea id="body" placeholder="Email body"></textarea>
-      <div class="actions">
-        <button id="open" class="action primary">Open in Gmail</button>
-        <button id="regen" class="action secondary">Regenerate</button>
-      </div>
-    </div>
+<h2>Nova AI</h2>
 
-    <div class="hint">
-      <span class="hint-chip"><span>"create email"</span> for Gmail</span>
-      <span class="hint-chip"><span>"play song"</span> for YouTube</span>
-    </div>
-  </div>
 
-  <script>
-    // --------------------------------------------------
-    // DOM REFERENCES
-    // --------------------------------------------------
-    const $ = id => document.getElementById(id);
-    const mic = $("mic");
-    const status = $("status");
-    const commandBox = $("command");
-    const editor = $("editor");
-    const recipient = $("recipient");
-    const subject = $("subject");
-    const body = $("body");
+<p>
+    Say a song name or create an email
+</p>
 
-    // --------------------------------------------------
-    // SPEECH RECOGNITION
-    // --------------------------------------------------
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition;
-    let listening = false;
 
-    // --------------------------------------------------
-    // COMMAND STATE
-    // --------------------------------------------------
-    let lastCommand = "";
-    let emailGenerated = false;
-    let generatingEmail = false;
-    let youtubeTab = null;
+<button
+    id="mic"
+    class="mic"
+>
+    🎙️
+</button>
 
-    // --------------------------------------------------
-    // STATUS HELPER
-    // --------------------------------------------------
-    function setStatus(text, state = "idle") {
-      status.innerHTML = `<span class="status-dot ${state}"></span>${text}`;
-    }
 
-    // --------------------------------------------------
-    // SPEECH RECOGNITION SETUP
-    // --------------------------------------------------
-    if (!SR) {
-      setStatus("Speech recognition unavailable", "idle");
-      mic.disabled = true;
-    } else {
-      recognition = new SR();
-      recognition.lang = "en-US";
-      recognition.continuous = false;
-      recognition.interimResults = false;
+<div
+    id="status"
+    class="status"
+>
+    Tap microphone
+</div>
 
-      recognition.onstart = () => {
+
+<div
+    id="command"
+    class="command"
+></div>
+
+
+
+<!-- Gmail Editor -->
+
+<div
+    id="editor"
+    class="editor"
+>
+
+
+    <div
+        id="recipient"
+        class="recipient"
+    ></div>
+
+
+    <input
+        id="subject"
+        placeholder="Email subject"
+    >
+
+
+    <textarea
+        id="body"
+        placeholder="Email body"
+    ></textarea>
+
+
+    <button
+        id="open"
+        class="action primary"
+    >
+        Open in Gmail
+    </button>
+
+
+    <button
+        id="regen"
+        class="action"
+    >
+        Regenerate
+    </button>
+
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+
+// --------------------------------------------------
+// DOM REFERENCES
+// --------------------------------------------------
+
+const $ =
+    id => document.getElementById(id);
+
+
+const mic =
+    $("mic");
+
+
+const status =
+    $("status");
+
+
+const commandBox =
+    $("command");
+
+
+const editor =
+    $("editor");
+
+
+const recipient =
+    $("recipient");
+
+
+const subject =
+    $("subject");
+
+
+const body =
+    $("body");
+
+
+
+// --------------------------------------------------
+// SPEECH RECOGNITION
+// --------------------------------------------------
+
+const SR =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+
+let recognition;
+
+let listening = false;
+
+
+
+// --------------------------------------------------
+// COMMAND STATE
+// --------------------------------------------------
+
+let lastCommand = "";
+
+
+// Prevent duplicate email generation
+
+let emailGenerated = false;
+
+
+// Prevent multiple requests at the same time
+
+let generatingEmail = false;
+
+
+// YouTube tab
+
+let youtubeTab = null;
+
+
+
+// --------------------------------------------------
+// SPEECH RECOGNITION SETUP
+// --------------------------------------------------
+
+if(!SR){
+
+    status.textContent =
+        "Speech recognition unavailable";
+
+    mic.disabled = true;
+
+}
+else{
+
+    recognition =
+        new SR();
+
+
+    recognition.lang =
+        "en-US";
+
+
+    recognition.continuous =
+        false;
+
+
+    recognition.interimResults =
+        false;
+
+
+
+    recognition.onstart = () => {
+
         listening = true;
-        mic.classList.add("listening");
-        document.querySelectorAll(".mic-ring").forEach(r => r.classList.add("active"));
-        setStatus("Listening...", "listening");
-      };
 
-      recognition.onend = () => {
+        mic.classList.add(
+            "listening"
+        );
+
+        status.textContent =
+            "Listening...";
+
+    };
+
+
+
+    recognition.onend = () => {
+
         listening = false;
-        mic.classList.remove("listening");
-        document.querySelectorAll(".mic-ring").forEach(r => r.classList.remove("active"));
-      };
 
-      recognition.onerror = e => {
+        mic.classList.remove(
+            "listening"
+        );
+
+    };
+
+
+
+    recognition.onerror = e => {
+
         listening = false;
-        mic.classList.remove("listening");
-        document.querySelectorAll(".mic-ring").forEach(r => r.classList.remove("active"));
-        setStatus("Voice error: " + e.error, "idle");
-      };
 
-      recognition.onresult = e => {
-        const text = e.results[0][0].transcript.trim();
-        if (!text) {
-          setStatus("No command detected", "idle");
-          return;
+        mic.classList.remove(
+            "listening"
+        );
+
+        status.textContent =
+            "Voice error: " +
+            e.error;
+
+    };
+
+
+
+    recognition.onresult = e => {
+
+        const text =
+            e.results[0][0]
+            .transcript
+            .trim();
+
+
+        if(!text){
+
+            status.textContent =
+                "No command detected";
+
+            return;
+
         }
-        lastCommand = text;
-        commandBox.textContent = text;
-        commandBox.classList.add("visible");
-        processCommand(text);
-      };
 
-      mic.onclick = () => {
-        if (listening) return;
-        try {
-          recognition.start();
-        } catch (e) {
-          console.log(e);
+
+        lastCommand =
+            text;
+
+
+        commandBox.textContent =
+            text;
+
+
+        processCommand(
+            text
+        );
+
+    };
+
+
+
+    mic.onclick = () => {
+
+        if(listening)
+            return;
+
+
+        try{
+
+            recognition.start();
+
         }
-      };
-    }
+        catch(e){
 
-    // --------------------------------------------------
-    // GMAIL KEYWORD DETECTION
-    // --------------------------------------------------
-    function isGmail(command) {
-      const hasCreate = /\bcreate\b/i.test(command);
-      const hasEmail = /\bemail\b/i.test(command);
-      return hasCreate && hasEmail;
-    }
+            console.log(e);
 
-    // --------------------------------------------------
-    // YOUTUBE KEYWORD DETECTION
-    // --------------------------------------------------
-    function isYouTube(command) {
-      return /\bplay\b/i.test(command) || /\bsong\b/i.test(command);
-    }
-
-    // --------------------------------------------------
-    // MAIN COMMAND PROCESSOR
-    // --------------------------------------------------
-    async function processCommand(command) {
-      const gmail = isGmail(command);
-      const youtube = isYouTube(command);
-
-      if (gmail) {
-        if (generatingEmail) {
-          setStatus("Email is already being generated...", "idle");
-          return;
         }
-        if (emailGenerated && command === lastCommand) {
-          setStatus("Email already generated.", "idle");
-          return;
+
+    };
+
+}
+
+
+
+// --------------------------------------------------
+// GMAIL KEYWORD DETECTION
+// --------------------------------------------------
+//
+// Gmail requires BOTH:
+//
+// create
+// email
+//
+// Examples:
+//
+// "create email for my boss"
+// "create an email for my manager"
+//
+// --------------------------------------------------
+
+function isGmail(command){
+
+    const hasCreate =
+        /\bcreate\b/i.test(command);
+
+
+    const hasEmail =
+        /\bemail\b/i.test(command);
+
+
+    return (
+        hasCreate &&
+        hasEmail
+    );
+
+}
+
+
+
+// --------------------------------------------------
+// YOUTUBE KEYWORD DETECTION
+// --------------------------------------------------
+//
+// YouTube requires:
+//
+// play
+//
+// OR
+//
+// song
+//
+// Examples:
+//
+// "play believer"
+// "play a song"
+// "song believer"
+//
+// --------------------------------------------------
+
+function isYouTube(command){
+
+    return (
+        /\bplay\b/i.test(command) ||
+        /\bsong\b/i.test(command)
+    );
+
+}
+
+
+
+// --------------------------------------------------
+// MAIN COMMAND PROCESSOR
+// --------------------------------------------------
+
+async function processCommand(command){
+
+
+    // ----------------------------------------------
+    // CHECK COMMAND TYPE
+    // ----------------------------------------------
+
+    const gmail =
+        isGmail(command);
+
+
+    const youtube =
+        isYouTube(command);
+
+
+
+    // ----------------------------------------------
+    // GMAIL COMMAND
+    // ----------------------------------------------
+
+    if(gmail){
+
+        // Prevent duplicate generation
+
+        if(generatingEmail){
+
+            status.textContent =
+                "Email is already being generated...";
+
+            return;
+
         }
+
+
+        // Prevent the same command from generating
+        // another email
+
+        if(
+            emailGenerated &&
+            command === lastCommand
+        ){
+
+            status.textContent =
+                "Email already generated.";
+
+            return;
+
+        }
+
 
         generatingEmail = true;
-        setStatus("Generating email...", "listening");
 
-        try {
-          const response = await fetch("/agent", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ command: command })
-          });
-          const data = await response.json();
 
-          if (!response.ok || !data.success) {
-            throw Error(data.message || "Email request failed");
-          }
+        status.textContent =
+            "Generating email...";
 
-          showEmail(data);
-          emailGenerated = true;
-        } catch (error) {
-          console.error(error);
-          setStatus(error.message || "Email generation failed", "idle");
-        } finally {
-          generatingEmail = false;
+
+        try{
+
+
+            const response =
+                await fetch(
+                    "/agent",
+                    {
+
+                        method:"POST",
+
+                        headers:{
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                command:command
+                            })
+
+                    }
+                );
+
+
+
+            const data =
+                await response.json();
+
+
+
+            if(
+                !response.ok ||
+                !data.success
+            ){
+
+                throw Error(
+                    data.message ||
+                    "Email request failed"
+                );
+
+            }
+
+
+
+            // Show ONE generated email
+
+            showEmail(
+                data
+            );
+
+
+            emailGenerated = true;
+
+
         }
-        return;
-      }
+        catch(error){
 
-      if (youtube) {
-        setStatus("Finding song...", "listening");
-        try {
-          const response = await fetch("/youtube/play", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ command: command })
-          });
-          const data = await response.json();
+            console.error(
+                error
+            );
 
-          if (!response.ok || !data.success) {
-            throw Error(data.message || "YouTube request failed");
-          }
 
-          playYouTube(data);
-        } catch (error) {
-          console.error(error);
-          setStatus(error.message || "YouTube request failed", "idle");
+            status.textContent =
+                error.message ||
+                "Email generation failed";
+
         }
-        return;
-      }
+        finally{
 
-      setStatus("Please say 'create email' or 'play song'.", "idle");
+            generatingEmail = false;
+
+        }
+
+
+        return;
+
     }
 
-    // --------------------------------------------------
-    // SHOW GENERATED EMAIL
-    // --------------------------------------------------
-    function showEmail(data) {
-      recipient.dataset.email = data.recipient || "";
-      recipient.textContent = data.recipient ? "To: " + data.recipient : "Recipient not specified";
-      subject.value = data.subject || "";
-      body.value = data.body || "";
-      editor.style.display = "block";
-      setStatus("Email ready. Review or edit it.", "idle");
+
+
+    // ----------------------------------------------
+    // YOUTUBE COMMAND
+    // ----------------------------------------------
+
+    else if(youtube){
+
+        status.textContent =
+            "Finding song...";
+
+
+        try{
+
+
+            const response =
+                await fetch(
+                    "/youtube/play",
+                    {
+
+                        method:"POST",
+
+                        headers:{
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                command:command
+                            })
+
+                    }
+                );
+
+
+
+            const data =
+                await response.json();
+
+
+
+            if(
+                !response.ok ||
+                !data.success
+            ){
+
+                throw Error(
+                    data.message ||
+                    "YouTube request failed"
+                );
+
+            }
+
+
+
+            playYouTube(
+                data
+            );
+
+
+        }
+        catch(error){
+
+            console.error(
+                error
+            );
+
+
+            status.textContent =
+                error.message ||
+                "YouTube request failed";
+
+        }
+
+
+        return;
+
     }
 
-    // --------------------------------------------------
-    // OPEN GMAIL
-    // --------------------------------------------------
-    $("open").onclick = () => {
-      const url = "https://mail.google.com/mail/u/0/?" + new URLSearchParams({
-        view: "cm",
-        fs: "1",
-        to: recipient.dataset.email || "",
-        su: subject.value,
-        body: body.value
-      });
-      const win = window.open(url, "NovaGmail");
-      if (!win) {
-        setStatus("Please allow popups for this site.", "idle");
-      }
-    };
 
-    // --------------------------------------------------
-    // REGENERATE BUTTON
-    // --------------------------------------------------
-    $("regen").onclick = () => {
-      setStatus("Email already generated. Edit the existing email.", "idle");
-    };
 
-    // --------------------------------------------------
-    // YOUTUBE PLAYBACK
-    // --------------------------------------------------
-    function playYouTube(data) {
-      if (!youtubeTab || youtubeTab.closed) {
-        youtubeTab = window.open(data.url, "NovaYouTube");
-      } else {
-        youtubeTab.location.href = data.url;
+    // ----------------------------------------------
+    // UNKNOWN COMMAND
+    // ----------------------------------------------
+
+    else{
+
+        status.textContent =
+            "Please say 'create email' or 'play song'.";
+
+        return;
+
+    }
+
+}
+
+
+
+// --------------------------------------------------
+// SHOW GENERATED EMAIL
+// --------------------------------------------------
+
+function showEmail(data){
+
+
+    recipient.dataset.email =
+        data.recipient || "";
+
+
+    recipient.textContent =
+        data.recipient
+        ? "To: " + data.recipient
+        : "Recipient not specified";
+
+
+    subject.value =
+        data.subject || "";
+
+
+    body.value =
+        data.body || "";
+
+
+    editor.style.display =
+        "block";
+
+
+    status.textContent =
+        "Email ready. Review or edit it.";
+
+}
+
+
+
+// --------------------------------------------------
+// OPEN GMAIL
+// --------------------------------------------------
+
+$("open").onclick = () => {
+
+
+    const url =
+        "https://mail.google.com/mail/u/0/?" +
+
+        new URLSearchParams({
+
+            view:"cm",
+
+            fs:"1",
+
+            to:
+                recipient.dataset.email || "",
+
+            su:
+                subject.value,
+
+            body:
+                body.value
+
+        });
+
+
+
+    const win =
+        window.open(
+            url,
+            "NovaGmail"
+        );
+
+
+
+    if(!win){
+
+        status.textContent =
+            "Please allow popups for this site.";
+
+    }
+
+};
+
+
+
+// --------------------------------------------------
+// REGENERATE BUTTON
+// --------------------------------------------------
+//
+// No automatic second generation.
+//
+// Clicking this button also does NOT call /agent.
+// --------------------------------------------------
+
+$("regen").onclick = () => {
+
+    status.textContent =
+        "Email already generated. Edit the existing email.";
+
+};
+
+
+
+// --------------------------------------------------
+// YOUTUBE PLAYBACK
+// --------------------------------------------------
+
+function playYouTube(data){
+
+
+    if(
+        !youtubeTab ||
+        youtubeTab.closed
+    ){
+
+        youtubeTab =
+            window.open(
+                data.url,
+                "NovaYouTube"
+            );
+
+    }
+    else{
+
+        youtubeTab.location.href =
+            data.url;
+
         youtubeTab.focus();
-      }
-      setStatus("Playing", "idle");
+
     }
-  </script>
+
+
+    status.textContent =
+        "Playing";
+
+}
+
+
+</script>
+
+
 </body>
+
 </html>
